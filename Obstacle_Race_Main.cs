@@ -44,7 +44,7 @@ namespace Controler
                         }
                         break;
                     case "left":
-                        if (0 < posy - 1 && posy - 1 < level[posx].Length && level[posx][posy - 1] == 0)
+                        if (0 < posy - 1 && level[posx][posy - 1] == 0)
                         {
                             empty = true;
                         }
@@ -62,7 +62,6 @@ namespace Controler
             {
                 Console.Write(e.Message);
                 throw new ArgumentOutOfRangeException("Wrong size of the level or wrong position of object!", e);
-                return false;
             }
         }
 
@@ -70,7 +69,28 @@ namespace Controler
 
     class PlayerControl
     {
-
+        // Player movement.
+        public static (int, int) Move_player(int[][] level, int posx, int posy, string key)
+        {
+            switch (key)
+            {
+                case "a":
+                    if (CheckPositions.Check_position(level, posx, (posy-1), "left"))
+                    {
+               
+                        posy +=  (-1);
+                    }
+                    break;
+                case "d":
+                    if (CheckPositions.Check_position(level, posx, (posy+1), "right"))
+                    {
+                        posy += 1;
+                    }
+                    break;
+            }
+            
+            return (posx, posy);
+        }
     }
 
 }
@@ -79,6 +99,7 @@ namespace LevelManager
 {
     class LevelCreator
     {
+        // Create array as a level map.
         public int[][] Create_Level(int x, int y)
         {
             int[][] level_map = new int[x][];
@@ -110,7 +131,7 @@ namespace LevelManager
 
     class LevelDisplay
     {
-        // Create a string out of array of integers to represent the game.
+        // Create a string out of array of integers to represent the game map.
         public string Display_level(int[][] level)
         {
             string level_display = "";
@@ -146,10 +167,9 @@ namespace LevelManager
 
 
         // Show objects on the map. Different objects can have different id_number so that they are
-        // display with a different symbol.
+        // displayed with different symbols.
         public int[][] Display_object(int[][] level, int obj_posx, int obj_posy, string obj_type)
         {
-            level[obj_posx][obj_posy] = 2;
             if (obj_type == "car")
             {
                 level[obj_posx][obj_posy] = 2;
@@ -159,6 +179,22 @@ namespace LevelManager
                 level[obj_posx - 2][obj_posy] = 2;
                 level[obj_posx - 1][obj_posy + 1] = 2;
                 level[obj_posx - 1][obj_posy - 1] = 2;
+            }
+            return level;
+        }
+
+        // Clear objects from the level.
+        public int[][] Clear_object(int[][] level, int obj_posx, int obj_posy, string obj_type)
+        {
+            if (obj_type == "car")
+            {
+                level[obj_posx][obj_posy] = 0;
+                level[obj_posx][obj_posy + 1] = 0;
+                level[obj_posx][obj_posy - 1] = 0;
+                level[obj_posx - 1][obj_posy] = 0;
+                level[obj_posx - 2][obj_posy] = 0;
+                level[obj_posx - 1][obj_posy + 1] = 0;
+                level[obj_posx - 1][obj_posy - 1] = 0;
             }
             return level;
         }
@@ -178,17 +214,27 @@ namespace GameRun
             int [][] level1 = LevelBuilder.Create_Level(12, 12);
             PlayerCar Player = new PlayerCar();
             Player.pos_x = 11;
-            Player.pos_y = 11;
+            Player.pos_y = 9;
             Player.type = "car";
 
             LevelDisplay LevelRenderer = new LevelDisplay();
             
-            // Don't display the car if it's outside of Level bounds.
-            if (CheckPositions.Check_position(level1, Player.pos_x, Player.pos_y, "left") && CheckPositions.Check_position(level1, Player.pos_x, Player.pos_y, "right"))
+
+            while (true)
             {
-                LevelRenderer.Display_object(level1, Player.pos_x, Player.pos_y, Player.type);
+                // Draw and show the level map.
+                level1 = LevelRenderer.Display_object(level1, Player.pos_x, Player.pos_y, Player.type);
+                Console.WriteLine(LevelRenderer.Display_level(level1));
+
+                // Clear out map before redrawing it.
+                level1 = LevelRenderer.Clear_object(level1, Player.pos_x, Player.pos_y, Player.type);
+
+                // Player controls.
+                string move_key = Console.ReadLine();
+                var player_new_position = PlayerControl.Move_player(level1, Player.pos_x, Player.pos_y, move_key);
+                Player.pos_x = player_new_position.Item1;
+                Player.pos_y = player_new_position.Item2;
             }
-            Console.WriteLine(LevelRenderer.Display_level(level1));
         }
     }
 }
