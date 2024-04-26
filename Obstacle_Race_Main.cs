@@ -70,7 +70,7 @@ namespace Controler
     class PlayerControl
     {
         // Player movement.
-        public static (int, int) Move_player(int[][] level, int posx, int posy, string key)
+        public static (int, int) Move_player(int[][] level, int posx, int posy, string? key)
         {
             switch (key)
             {
@@ -230,7 +230,7 @@ namespace GameRun
                 level1 = LevelRenderer.Clear_object(level1, Player.pos_x, Player.pos_y, Player.type);
 
                 // Player controls.
-                string move_key = Console.ReadLine();
+                string? move_key = Console.ReadLine();
                 var player_new_position = PlayerControl.Move_player(level1, Player.pos_x, Player.pos_y, move_key);
                 Player.pos_x = player_new_position.Item1;
                 Player.pos_y = player_new_position.Item2;
@@ -238,3 +238,4 @@ namespace GameRun
         }
     }
 }
+
