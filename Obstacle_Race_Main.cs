@@ -1,14 +1,19 @@
 using LevelManager;
+using Player;
+using Controler;
 using System;
 using System.ComponentModel.Design;
+using Obstacle;
+using System.Reflection.Metadata;
+
+
 namespace Player
 {
     class PlayerCar
     {
         public int pos_x { get; set; }
         public int pos_y { get; set; }
-        public string type { get; set; }
-
+        public string? type { get; set; }
     }
 
 }
@@ -20,7 +25,7 @@ namespace Obstacle
         public int pos_x { get; set; }
         public int pos_y { get; set; }
 
-        public string type { get; set; }
+        public string? type { get; set; }
     }
 }
 
@@ -51,6 +56,12 @@ namespace Controler
                         break;
                     case "down":
                         if (posx + 1 < level.Length && level[posx + 1][posy] == 0)
+                        {
+                            empty = true;
+                        }
+                        break;
+                    case "up":
+                        if (0 < posx - 1 && level[posx - 1][posy] == 0)
                         {
                             empty = true;
                         }
@@ -89,6 +100,19 @@ namespace Controler
                     break;
             }
             
+            return (posx, posy);
+        }
+    }
+
+    class ObstacleControl
+    {
+        // Obstacle cars movement.
+        public static (int, int) Move_obstacle(int[][] level, int posx, int posy)
+        {
+            if (CheckPositions.Check_position(level, posx+1, posy, "down"))
+            {
+                posx += 1;
+            }
             return (posx, posy);
         }
     }
@@ -172,29 +196,68 @@ namespace LevelManager
         {
             if (obj_type == "car")
             {
-                level[obj_posx][obj_posy] = 2;
-                level[obj_posx][obj_posy + 1] = 2;
-                level[obj_posx][obj_posy - 1] = 2;
-                level[obj_posx - 1][obj_posy] = 2;
-                level[obj_posx - 2][obj_posy] = 2;
-                level[obj_posx - 1][obj_posy + 1] = 2;
-                level[obj_posx - 1][obj_posy - 1] = 2;
+                if (level[obj_posx][obj_posy] == 0)
+                {
+                    level[obj_posx][obj_posy] = 2;
+                    if (CheckPositions.Check_position(level, obj_posx, obj_posy, "left") && CheckPositions.Check_position(level, obj_posx, obj_posy, "right"))
+                    {
+                        level[obj_posx][obj_posy + 1] = 2;
+                        level[obj_posx][obj_posy - 1] = 2;
+                    }
+                }
+                if (CheckPositions.Check_position(level, obj_posx, obj_posy, "up"))
+                {
+                    level[obj_posx - 1][obj_posy] = 2;
+                    if (CheckPositions.Check_position(level, (obj_posx - 1), obj_posy, "left") && CheckPositions.Check_position(level, (obj_posx - 1), obj_posy, "right"))
+                    {
+                        level[obj_posx - 1][obj_posy + 1] = 2;
+                        level[obj_posx - 1][obj_posy - 1] = 2;
+                    }
+                }
+                if (CheckPositions.Check_position(level, obj_posx - 1, obj_posy, "up"))
+                {
+                    level[obj_posx - 2][obj_posy] = 2;
+                }
+                
+                
             }
             return level;
         }
 
-        // Clear objects from the level.
+        // Clear objects from the level. Needs improvement as this is a quick fix; I had no time to work on this more.
         public int[][] Clear_object(int[][] level, int obj_posx, int obj_posy, string obj_type)
         {
+            
             if (obj_type == "car")
             {
-                level[obj_posx][obj_posy] = 0;
-                level[obj_posx][obj_posy + 1] = 0;
-                level[obj_posx][obj_posy - 1] = 0;
-                level[obj_posx - 1][obj_posy] = 0;
-                level[obj_posx - 2][obj_posy] = 0;
-                level[obj_posx - 1][obj_posy + 1] = 0;
-                level[obj_posx - 1][obj_posy - 1] = 0;
+                if (obj_posx >= 0 && obj_posx <= level.Length && obj_posy > 0 && obj_posy < level[obj_posx].Length)
+                {
+                    level[obj_posx][obj_posy] = 0;
+                    if (obj_posy + 1 > 0 && obj_posy + 1 < level[obj_posx].Length)
+                    {
+                        level[obj_posx][obj_posy + 1] = 0;
+                    }
+                    if (obj_posy - 1 > 0 && obj_posy - 1 < level[obj_posx].Length)
+                    {
+                        level[obj_posx][obj_posy - 1] = 0;
+                    }
+                }
+                if (obj_posx - 1 > 0 && obj_posx - 1 < level.Length && obj_posy > 0 && obj_posy < level[obj_posx].Length)
+                {
+                    level[obj_posx - 1][obj_posy] = 0;
+                    if(obj_posy + 1 > 0 && obj_posy + 1 < level[obj_posx].Length)
+                    {
+                        level[obj_posx - 1][obj_posy + 1] = 0;
+                    }
+                    if(obj_posy - 1 > 0 && obj_posy - 1 < level[obj_posx].Length)
+                    {
+                        level[obj_posx - 1][obj_posy - 1] = 0;
+                    }
+                }               
+                if (obj_posx - 1 > 0 && obj_posx - 1 < level.Length && obj_posy > 0 && obj_posy < level[obj_posx].Length)
+                {
+                    level[obj_posx - 2][obj_posy] = 0;
+                }
             }
             return level;
         }
@@ -203,9 +266,7 @@ namespace LevelManager
 
 namespace GameRun
 {
-    using LevelManager;
-    using Player;
-    using Controler;
+
     class Test
     {
         static void Main()
@@ -217,25 +278,36 @@ namespace GameRun
             Player.pos_y = 9;
             Player.type = "car";
 
+            ObstacleCar Obstacle = new ObstacleCar();
+            Obstacle.pos_x = 0;
+            Obstacle.pos_y = 5;
+            Obstacle.type = "car";
+
             LevelDisplay LevelRenderer = new LevelDisplay();
             
 
             while (true)
             {
+                
+
                 // Draw and show the level map.
                 level1 = LevelRenderer.Display_object(level1, Player.pos_x, Player.pos_y, Player.type);
-                Console.WriteLine(LevelRenderer.Display_level(level1));
+                level1 = LevelRenderer.Display_object(level1, Obstacle.pos_x, Obstacle.pos_y, Obstacle.type);
 
+                Console.WriteLine(LevelRenderer.Display_level(level1));
                 // Clear out map before redrawing it.
                 level1 = LevelRenderer.Clear_object(level1, Player.pos_x, Player.pos_y, Player.type);
-
+                level1 = LevelRenderer.Clear_object(level1, Obstacle.pos_x, Obstacle.pos_y, Obstacle.type);
                 // Player controls.
                 string? move_key = Console.ReadLine();
                 var player_new_position = PlayerControl.Move_player(level1, Player.pos_x, Player.pos_y, move_key);
                 Player.pos_x = player_new_position.Item1;
                 Player.pos_y = player_new_position.Item2;
+                var obstacle_new_position = ObstacleControl.Move_obstacle(level1, Obstacle.pos_x, Obstacle.pos_y);
+                Obstacle.pos_x = obstacle_new_position.Item1;
+                Obstacle.pos_y = obstacle_new_position.Item2;
+
             }
         }
     }
 }
-
