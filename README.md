@@ -1,6 +1,10 @@
 # CS-ObstacleRace
 Small Game to practice C#
 
+# 26.04.2024
+**Added:**
+- Movement for Obstacle Cars.
+
 # 25.04.2024
 Currently the game has:
 Level creation function - Creates an array of integers that gets translated in to the string for displaying.
