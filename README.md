@@ -1,6 +1,9 @@
 # CS-ObstacleRace
 Small Game to practice C#
 
+# 30.04.2024
+- Small changes to the code: Obstacle Car movement, Check_positions and Clear Display.
+
 # 26.04.2024
 **Added:**
 - Movement for Obstacle Cars.
