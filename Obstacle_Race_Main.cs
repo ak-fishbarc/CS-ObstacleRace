@@ -119,14 +119,35 @@ namespace Controler
 
     class ObstacleControl
     {
-        // Obstacle cars movement.
+        // Obstacle car's movement.
         public static (int, int) Move_obstacle(int[][] level, int posx, int posy)
         {
             if (CheckPositions.Check_position(level, posx, posy, "down", 0))
             {            
                 posx += 1;
             }
-            return (posx, posy);
+
+            return (posx, posy);         
+        }
+    }
+
+    // Create an illusion that the Obstacle Car is disappearing at the bottom of the map.
+    class BorderControl
+    {
+        public string Disappear_object(int[][] level, int posx, string obj_type)
+        {
+            if (posx + 1 == level.Length && obj_type == "car")
+            {
+                return "disappearing_car_1";
+            }
+            else if (posx + 1 == level.Length && obj_type == "disappearing_car_1")
+            {
+                return "disappearing_car_2";
+            }
+            else
+            {
+                return obj_type;
+            }
         }
     }
 
@@ -229,16 +250,34 @@ namespace LevelManager
                 {
                     level[obj_posx - 2][obj_posy] = 2;
                 }
-                
-                
             }
+            else if (obj_type == "disappearing_car_1")
+            {
+                if (CheckPositions.Check_position(level, obj_posx, obj_posy, "up", 0))
+                {
+                    level[obj_posx][obj_posy] = 2;
+                    if (CheckPositions.Check_position(level, (obj_posx - 1), obj_posy, "left", 0) && CheckPositions.Check_position(level, (obj_posx - 1), obj_posy, "right", 0))
+                    {
+                        level[obj_posx][obj_posy + 1] = 2;
+                        level[obj_posx][obj_posy - 1] = 2;
+                    }
+                }
+                if (CheckPositions.Check_position(level, obj_posx, obj_posy, "up", 0))
+                {
+                    level[obj_posx - 1][obj_posy] = 2;
+                }
+            }
+            else if (obj_type == "disappearing_car_2")
+            {
+                level[obj_posx][obj_posy] = 2;
+            }
+
             return level;
         }
 
         // Clear objects from the level. Needs improvement as this is a quick fix; I had no time to work on this more.
         public int[][] Clear_object(int[][] level, int obj_posx, int obj_posy, string obj_type)
         {
-
             if (obj_type == "car")
             {
                 if (level[obj_posx][obj_posy] == 2)
@@ -263,6 +302,35 @@ namespace LevelManager
                 {
                     level[obj_posx - 2][obj_posy] = 0;
                 }
+            }
+            else if (obj_type == "disappearing_car_1")
+            {
+                if (level[obj_posx][obj_posy] == 2)
+                {
+                    level[obj_posx][obj_posy] = 0;
+                    if (CheckPositions.Check_position(level, obj_posx, obj_posy, "left", 2) && CheckPositions.Check_position(level, obj_posx, obj_posy, "right", 2))
+                    {
+                        level[obj_posx][obj_posy + 1] = 0;
+                        level[obj_posx][obj_posy - 1] = 0;
+                    }
+                }
+                if (CheckPositions.Check_position(level, obj_posx, obj_posy, "up", 2))
+                {
+                    level[obj_posx - 1][obj_posy] = 0;
+                    if (CheckPositions.Check_position(level, (obj_posx - 1), obj_posy, "left", 2) && CheckPositions.Check_position(level, (obj_posx - 1), obj_posy, "right", 2))
+                    {
+                        level[obj_posx - 1][obj_posy + 1] = 0;
+                        level[obj_posx - 1][obj_posy - 1] = 0;
+                    }
+                }
+                if (CheckPositions.Check_position(level, obj_posx - 1, obj_posy, "up", 2))
+                {
+                    level[obj_posx - 2][obj_posy] = 0;
+                }
+            }
+            else if (obj_type == "disappearing_car_2")
+            {
+                level[obj_posx][obj_posy] = 0;
             }
             return level;
         }
@@ -289,14 +357,15 @@ namespace GameRun
             Obstacle.type = "car";
 
             LevelDisplay LevelRenderer = new LevelDisplay();
-
+            BorderControl B_Control = new BorderControl();
             while (true)
-            {
-                // Draw and show the level map.
+            {             
+                // Draw and show the level map.     
                 level1 = LevelRenderer.Display_object(level1, Player.pos_x, Player.pos_y, Player.type);
                 level1 = LevelRenderer.Display_object(level1, Obstacle.pos_x, Obstacle.pos_y, Obstacle.type);
                 Console.WriteLine(LevelRenderer.Display_level(level1));
-                
+
+               
                 // Player controls.
                 string? move_key = Console.ReadLine();
                 var player_new_position = PlayerControl.Move_player(level1, Player.pos_x, Player.pos_y, move_key);
@@ -305,12 +374,22 @@ namespace GameRun
                 // Clear out map before redrawing it.
                 level1 = LevelRenderer.Clear_object(level1, Player.pos_x, Player.pos_y, Player.type);
                 level1 = LevelRenderer.Clear_object(level1, Obstacle.pos_x, Obstacle.pos_y, Obstacle.type);
+                if (Obstacle.type == "disappearing_car_2")
+                {
+                    Obstacle.pos_x = 0;
+                    Obstacle.type = "car";
+                } else
+                {
+                    Obstacle.pos_x = obstacle_new_position.Item1;
+                    Obstacle.pos_y = obstacle_new_position.Item2;
+                }
 
                 Player.pos_x = player_new_position.Item1;
                 Player.pos_y = player_new_position.Item2;
-                Obstacle.pos_x = obstacle_new_position.Item1;
-                Obstacle.pos_y = obstacle_new_position.Item2;
-
+                
+                
+                string Check_if_obstacle_reached_the_end = B_Control.Disappear_object(level1, Obstacle.pos_x, Obstacle.type);
+                Obstacle.type = Check_if_obstacle_reached_the_end;
             }
         }
     }
