@@ -6,6 +6,7 @@ Small Game to practice C#
 
 # 30.04.2024
 - Small changes to the code: Obstacle Car movement, Check_positions and Clear Display.
+- Car will disappear at the end of the map and reappear from the top. For now, in a loop.
 
 # 26.04.2024
 **Added:**
