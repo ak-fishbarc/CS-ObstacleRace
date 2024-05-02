@@ -7,8 +7,9 @@ Small Game to practice C#
 - Added collision detection
 - Added random spawn for obstacles.
 
-**Next: **
+**Next:**
 - Refactor code. It's a mess.
+- There's a bug with spawning where cars will spawn with strange shapes.
 
 # 30.04.2024
 - Small changes to the code: Obstacle Car movement, Check_positions and Clear Display.
