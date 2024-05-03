@@ -1,0 +1,29 @@
+using System;
+class LevelCreator
+{
+    // Create array as a level map.
+    public int[][] Create_Level(int x, int y)
+    {
+        int[][] level_map = new int[x][];
+        for (int row_no = 0; row_no < x; row_no++)
+        {
+            level_map[row_no] = new int[y];
+
+            for (int index_in_row = 0; index_in_row < y; index_in_row++)
+            {
+                if (index_in_row == 0 || index_in_row == (y - 1))
+                {
+                    level_map[row_no][index_in_row] = 1;
+                }
+                else if (index_in_row > 0 && index_in_row < (y - 1))
+                {
+
+                    level_map[row_no][index_in_row] = 0;
+
+                }
+
+            }
+        }
+        return level_map;
+    }
+}
