@@ -1,0 +1,67 @@
+using CollisionManager;
+using System;
+using System.Reflection.Metadata;
+
+namespace DisplayManager
+{
+    class LevelDisplay
+    {
+        // Create a string out of array of integers to represent the game map.
+        public string Display_level(int[][] level)
+        {
+            string level_display = "";
+            for (int row_no = 0; row_no < level.Length; row_no++)
+            {
+                for (int index_in_row = 0; index_in_row < level[row_no].Length; index_in_row++)
+                {
+                    // 0 = Road.
+                    if (level[row_no][index_in_row] == 0)
+                    {
+
+                        level_display += " ";
+
+                    }
+                    // 1 = Side of the road.
+                    else if (level[row_no][index_in_row] == 1)
+                    {
+
+                        level_display += "#";
+
+                    }
+                    // 2 = Car object.
+                    else if (level[row_no][index_in_row] == 2)
+                    {
+                        level_display += "*";
+                    }
+                }
+                level_display += Environment.NewLine;
+            }
+
+            return level_display;
+        }
+
+
+        // Show objects on the map. Different objects can have different id_number so that they are
+        // displayed with different symbols.
+        public int[][] Display_object(int[][] level, (int, int)[] shape)
+        {
+            foreach ((int, int) position in shape)
+            {
+                Console.WriteLine(position);
+                level[position.Item1][position.Item2] = 2;
+            }
+
+            return level;
+        }
+
+        // Clear objects from the level.
+        public int[][] Clear_object(int[][] level, (int, int)[] shape)
+        {
+            foreach ((int, int) position in shape)
+            {
+                level[position.Item1][position.Item2] = 0;
+            }
+            return level;
+        }
+    }
+}
