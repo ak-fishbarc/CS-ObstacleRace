@@ -3,6 +3,9 @@ Small Game to practice C#
 
 ![Obstacle_race](https://github.com/ak-fishbarc/CS-ObstacleRace/assets/60137170/4cea0371-0501-494c-a461-647b60e97ab0)
 
+# 03.05.2024 
+- In the process of refactoring.
+
 # 02.05.2024
 - Added collision detection
 - Added random spawn for obstacles.
