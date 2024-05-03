@@ -1,0 +1,34 @@
+namespace GameObjects
+{
+    class Car
+    {
+        private int posx;
+        private int posy;
+        private (int, int)[]? car_shape;
+
+        public (int, int)[] Access_shape
+        {
+            get { return this.car_shape; }
+            set { this.car_shape = [(this.posx, this.posy), (this.posx - 1, this.posy), (this.posx - 2, this.posy),
+                (this.posx, this.posy - 1), (this.posx, this.posy + 1), (this.posx - 1, this.posy - 1), (this.posx - 1, this.posy + 1)]; }
+        }
+        public int Access_posx
+        {
+            get { return this.posx;  }
+            set { this.posx = value; }
+        }
+        public int Access_posy
+        {
+            get { return this.posy; }
+            set { this.posy = value; }
+        }
+    }
+    class PlayerCar : Car
+    {
+
+    }
+    class ObstacleCar : Car
+    {
+
+    }
+}
