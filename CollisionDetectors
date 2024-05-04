@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace CollisionManager
 {
@@ -31,20 +32,35 @@ namespace CollisionManager
     // To be changed.
     class BorderCollision
     {
-        public string Disappear_object(int[][] level, int posx, string obj_type)
+        public static (int, int)[] Disappear_object(int[][] level, int posx, (int, int)[] shape)
         {
-            if (posx + 1 == level.Length && obj_type == "car")
+            (int, int)[] new_shape = new (int, int)[8];
+            int counter = 0;
+            int trim_by = 0;
+            
+            if (posx + 1 == level.Length)
             {
-                return "disappearing_car_1";
+                foreach ((int, int)position in shape)
+                {
+                    if (position.Item1 != posx)
+                    {
+                        new_shape[counter] = ((position.Item1 + 1), position.Item2);
+                        counter++;
+                    }
+                }
+                foreach ((int, int)position in new_shape)
+                {
+                    if (position.Item1 == 0 && position.Item2 == 0)
+                    {
+                        trim_by++;
+                    }
+                }
+                Array.Resize(ref new_shape, (new_shape.Length - trim_by));
+                return new_shape;
+
             }
-            else if (posx + 1 == level.Length && obj_type == "disappearing_car_1")
-            {
-                return "disappearing_car_2";
-            }
-            else
-            {
-                return obj_type;
-            }
+            return shape;
+            
         }
     }
 
