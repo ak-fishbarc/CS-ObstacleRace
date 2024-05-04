@@ -12,6 +12,10 @@ namespace GameObjects
             set { this.car_shape = [(this.posx, this.posy), (this.posx - 1, this.posy), (this.posx - 2, this.posy),
                 (this.posx, this.posy - 1), (this.posx, this.posy + 1), (this.posx - 1, this.posy - 1), (this.posx - 1, this.posy + 1)]; }
         }
+        public void Change_shape((int, int)[] new_shape)
+        {
+            this.car_shape = new_shape;
+        }
         public int Access_posx
         {
             get { return this.posx;  }
