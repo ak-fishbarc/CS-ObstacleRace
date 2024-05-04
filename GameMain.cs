@@ -24,7 +24,7 @@ namespace GameRun
             ObstacleCar Obstacle = new ObstacleCar();
             Obstacle.Access_posx = 2;
             Obstacle.Access_posy = 5;
-            Obstacle.Access_shape = Player.Access_shape;
+            Obstacle.Access_shape = Obstacle.Access_shape;
 
             LevelDisplay LevelRenderer = new LevelDisplay();
             ObstaclesManager O_Control = new ObstaclesManager();
@@ -52,17 +52,21 @@ namespace GameRun
 
                 Obstacle.Access_posx = obstacle_new_position.Item1;
                 Obstacle.Access_posy = obstacle_new_position.Item2;
-                Obstacle.Access_shape = Obstacle.Access_shape;
-
-                Console.WriteLine(player_new_position.Item1);
-                Console.WriteLine(player_new_position.Item2);
+                if(obstacle_new_position.Item1 + 1 != level1.Length)
+                {
+                    Obstacle.Access_shape = Obstacle.Access_shape;
+                }
 
                 Player.Access_posx = player_new_position.Item1;
                 Player.Access_posy = player_new_position.Item2;
                 Player.Access_shape = Player.Access_shape;
+
+                Obstacle.Change_shape(BorderCollision.Disappear_object(level1, Obstacle.Access_posx, Obstacle.Access_shape));
+            
             }
 
         }
     }
 }
+
 
